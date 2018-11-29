@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- TODO Cards appear in random order because each card tries to get the user's name from the user id and each request does not take the same amount of time -->
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,shrink-to-fit=no">
+  <meta name="theme-color" content="#000000">
+  <link rel="shortcut icon" href="/favicon.ico">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
+  <link href="/node_modules/jquery-toast-plugin/dist/jquery.toast.min.css" rel="stylesheet">
+  <title>Genesys PureCloud GDPR Requests</title>
+  <link href="/static/css/index.css" rel="stylesheet">
+</head>
+
+<body style="width: 500px;">
+  <noscript>You need to enable JavaScript to run this app.</noscript>
+
+  <!--#region Navbar -->
+
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div>
+      <button type="button" id="refresh" class="btn btn-info"><i class="fas fa-sync-alt"></i> Refresh</button>
+      <button type="button" id="newrequest" class="btn btn-primary"><i class="fas fa-plus"></i> New Request</button>
+    </div>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item active">
+          <a class="nav-link" href="/">Current Requests</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <!--#endregion -->
+
+  <!--#region Current Requests -->
+
+  <div class="container mt-2">
+    <div>
+      <h6 class="text-center">Current Requests</h6>
+      <hr />
+    </div>
+
+    <div id="cards"></div>
+
+  </div>
+
+  <!--#endregion -->
+
+  <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
+  <script src="https://sdk-cdn.mypurecloud.com/javascript/41.0.0/purecloud-platform-client-v2.min.js"></script>
+  <script src="/node_modules/jquery-toast-plugin/dist/jquery.toast.min.js"></script>
+  <script src="/static/js/notifications.js"></script>
+  <script src="/static/js/purecloud.js"></script>
+
+  <script>
+
+    // Refresh button
+    $("#refresh").click(() => {
+      loadCards();
+    });
+
+    // New request button
+    $("#newrequest").click(() => {
+      $(location).attr('href', 'newrequest.html');
+    });
+
+    loadCards();
+
+    function loadCards() {
+
+      getGDPRRequests().then(async (requests) => {
+        try {
+          for (let i = 0; i < requests.entities.length; i++) {
+            $("#cards").empty();
+            const request = requests.entities[i];
+
+            const type = request.requestType;
+            const status = request.status;
+            const name = request.subject ? request.subject.name : "";
+            const phoneNumber = request.subject ? request.subject.phoneNumbers ? request.subject.phoneNumbers[0] : "" : "";
+            const address = request.subject ? request.subject.addresses ? request.subject.addresses[0] : "" : "";
+            const emailAddress = request.subject ? request.subject.emailAddresses ? request.subject.emailAddresses[0] : "" : "";
+            const userId = request.subject ? request.subject.userId ? request.subject.userId : "" : "";
+            const externalContactId = request.subject ? request.subject.externalContactId ? request.subject.externalContactId : "" : "";
+            const dialerContactId = request.subject ? request.subject.dialerContactId ? request.subject.dialerContactId.id : "" : "";
+            const createdDate = moment(request.createdDate).fromNow();
+            var createdBy;
+
+            // Get user's name
+            getUser(request.createdBy.id).then((user) => {
+              // Display the card with the user's name
+              createdBy = user.name;
+              $("#cards").append(createCard(type, status, name, phoneNumber, address, emailAddress, createdBy, createdDate, userId, externalContactId, dialerContactId));
+            }).catch((error) => {
+              console.error(error);
+              // Display the card with the user id
+              createdBy = request.createdBy.id;
+              $("#cards").append(createCard(type, status, name, phoneNumber, address, emailAddress, createdBy, createdDate, userId, externalContactId, dialerContactId));
+            });
+          }
+        } catch (error) {
+          console.error(error);
+          showMessage(error, true);
+        }
+      }).catch((err) => {
+        console.error("Failed to get current GDPR requests");
+      });
+    }
+
+    function createCard(type, status, name, phoneNumber, address, email, createdBy, createdDate, userId, externalContactId, dialerContactId) {
+      var cardDiv = document.createElement("div")
+      cardDiv.className = "card shadow mt-2";
+
+      //#region Header
+
+      var header = document.createElement("h6");
+      header.className = "card-header small";
+
+      // Status
+      switch (status) {
+        case "COMPLETED":
+          header.classList.add("bg-success");
+          header.classList.add("text-light");
+          break;
+        case "INITIATED":
+        case "DELETING":
+        case "FINALIZING":
+        case "SEARCHING":
+        case "UPDATING":
+          header.classList.add("bg-warning");
+          header.classList.add("text-dark");
+          break;
+        case "ERROR":
+          header.classList.add("bg-danger");
+          header.classList.add("text-light");
+          break;
+        default:
+          console.error(`Unknown status: ${status}`);
+          break;
+      }
+
+      // Type
+      switch (type) {
+        case "GDPR_EXPORT":
+          header.innerHTML = `<i class="fas fa-file-export" data-toggle="tooltip" data-placement="top" title="Export"></i>`;
+          break;
+        case "GDPR_DELETE":
+          header.innerHTML = `<i class="fas fa-trash" data-toggle="tooltip" data-placement="top" title="Delete"></i>`;
+          break;
+        case "GDPR_UPDATE":
+          header.innerHTML = `<i class="fas fa-refresh" data-toggle="tooltip" data-placement="top" title="Update"></i>`;
+          break;
+        default:
+          console.error(`Unknown type: ${type}`);
+          break;
+      }
+
+      header.innerHTML += `${name ? name : ""}<div class="float-right">${status}</div>`;
+
+      cardDiv.append(header);
+
+      //#endregion
+
+      //#region Body
+
+      var body = document.createElement("div");
+      body.className = "card-body bg-light";
+
+      var rowDiv = document.createElement("div");
+      rowDiv.className = "row";
+
+      // Name
+      if (name) {
+        var nameSection = document.createElement("h6");
+        nameSection.className = "card-text small mr-1 ml-1";
+        nameSection.innerHTML = `<i class="fas fa-user-circle"></i> ${name}`;
+        rowDiv.append(nameSection);
+      }
+
+      // Phone Number
+      if (phoneNumber) {
+        var phoneNumberSection = document.createElement("h6");
+        phoneNumberSection.className = "card-text small mr-1 ml-1";
+        phoneNumberSection.innerHTML = `<i class="fas fa-phone"></i> ${phoneNumber}`;
+        rowDiv.append(phoneNumberSection);
+      }
+
+      // Address
+      if (address) {
+        var addressSection = document.createElement("h6");
+        addressSection.className = "card-text small mr-1 ml-1";
+        addressSection.innerHTML = `<i class="fas fa-address-card"></i> ${address}`;
+        rowDiv.append(addressSection);
+      }
+
+      // Email
+      if (email) {
+        var emailSection = document.createElement("h6");
+        emailSection.className = "card-text small mr-1 ml-1";
+        emailSection.innerHTML = `<i class="fas fa-envelope"></i> ${email}`;
+        rowDiv.append(emailSection);
+      }
+
+      body.append(rowDiv);
+
+      cardDiv.append(body);
+
+      //#endregion
+
+      //#region Footer
+
+      var footer = document.createElement("div");
+      footer.className = "row no-gutters bg-light";
+
+      var col = document.createElement("div");
+      col.className = "col";
+
+      var leftPart = document.createElement("div");
+      leftPart.className = "float-left text-secondary small ml-1";
+
+      // User Id
+      if (userId) {
+        var userIdSection = document.createElement("small");
+        userIdSection.setAttribute("id", "userId");
+        userIdSection.setAttribute("data-toggle", "tooltip");
+        userIdSection.setAttribute("data-placement", "top");
+        userIdSection.setAttribute("title", "User Id");
+        userIdSection.innerHTML = `<i class="fas fa-id-card"></i> ${userId}`;
+        leftPart.append(userIdSection);
+      }
+
+      // External Contact Id
+      if (externalContactId) {
+        var externalContactIdSection = document.createElement("small");
+        externalContactIdSection.className = "ml-1";
+        externalContactIdSection.setAttribute("id", "externalContactId");
+        externalContactIdSection.setAttribute("data-toggle", "tooltip");
+        externalContactIdSection.setAttribute("data-placement", "top");
+        externalContactIdSection.setAttribute("title", "External Contact Id");
+        externalContactIdSection.innerHTML = `<i class="fas fa-external-link-alt"></i> ${externalContactId}`;
+        leftPart.append(externalContactIdSection);
+      }
+
+      if (dialerContactId) {
+        // New Line
+        var newLine = document.createElement("br");
+        leftPart.append(newLine);
+
+        // Dialer Contact Id
+        var dialerContactIdSection = document.createElement("small");
+        dialerContactIdSection.className = "ml-1";
+        dialerContactIdSection.setAttribute("id", "dialerContactId");
+        dialerContactIdSection.setAttribute("data-toggle", "tooltip");
+        dialerContactIdSection.setAttribute("data-placement", "top");
+        dialerContactIdSection.setAttribute("title", "Dialer Contact Id");
+        dialerContactIdSection.innerHTML = `<i class="fas fa-sign-out-alt"></i> ${dialerContactId}`;
+        leftPart.append(dialerContactIdSection);
+      }
+
+      col.append(leftPart);
+
+      // Created By
+      var rightPart = document.createElement("div");
+      rightPart.className = "float-right text-secondary small";
+
+      var createdBySection = document.createElement("h6");
+      createdBySection.className = "small mr-2";
+      createdBySection.innerHTML = `Created by ${createdBy} (${createdDate})`;
+
+      rightPart.append(createdBySection);
+
+      col.append(rightPart);
+
+      footer.append(col);
+      cardDiv.append(footer);
+
+      //#endregion
+
+      // Activate bootstrap tooltips
+      $("[data-toggle='tooltip']").tooltip();
+
+      return cardDiv;
+    }
+
+  </script>
+</body>
+
+</html>
