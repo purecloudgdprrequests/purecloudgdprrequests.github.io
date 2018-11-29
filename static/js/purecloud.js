@@ -2,7 +2,7 @@
 
 // **** Token Implicit Grant (Browser) - UserLogin ****
 const clientId = '89f29367-dc0e-4fd0-9f55-7175a73ee600'; //  PureCloud-poland
-const redirectUrl = 'http://localhost:8080/index.html';
+const redirectUrl = 'https://purecloudgdprrequests.github.io/index.html';
 const environment = 'mypurecloud.ie';
 
 const platformClient = require('platformClient');
