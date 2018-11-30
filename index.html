@@ -182,13 +182,13 @@
       // Type
       switch (type) {
         case "GDPR_EXPORT":
-          header.innerHTML = `<i class="fas fa-file-export" data-toggle="tooltip" data-placement="top" title="Export"></i>`;
+          header.innerHTML = `<i class="fas fa-file-export" data-toggle="tooltip" data-placement="top" title="Export"></i> `;
           break;
         case "GDPR_DELETE":
-          header.innerHTML = `<i class="fas fa-trash" data-toggle="tooltip" data-placement="top" title="Delete"></i>`;
+          header.innerHTML = `<i class="fas fa-trash" data-toggle="tooltip" data-placement="top" title="Delete"></i> `;
           break;
         case "GDPR_UPDATE":
-          header.innerHTML = `<i class="fas fa-refresh" data-toggle="tooltip" data-placement="top" title="Update"></i>`;
+          header.innerHTML = `<i class="fas fa-refresh" data-toggle="tooltip" data-placement="top" title="Update"></i> `;
           break;
         default:
           console.error(`Unknown type: ${type}`);
