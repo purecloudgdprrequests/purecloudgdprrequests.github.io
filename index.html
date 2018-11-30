@@ -81,42 +81,70 @@
     function loadCards() {
 
       getGDPRRequests().then(async (requests) => {
-        try {
-          for (let i = 0; i < requests.entities.length; i++) {
-            $("#cards").empty();
-            const request = requests.entities[i];
+        for (let i = 0; i < requests.entities.length; i++) {
+          $("#cards").empty();
+          const request = requests.entities[i];
 
-            const type = request.requestType;
-            const status = request.status;
-            const name = request.subject ? request.subject.name : "";
-            const phoneNumber = request.subject ? request.subject.phoneNumbers ? request.subject.phoneNumbers[0] : "" : "";
-            const address = request.subject ? request.subject.addresses ? request.subject.addresses[0] : "" : "";
-            const emailAddress = request.subject ? request.subject.emailAddresses ? request.subject.emailAddresses[0] : "" : "";
-            const userId = request.subject ? request.subject.userId ? request.subject.userId : "" : "";
-            const externalContactId = request.subject ? request.subject.externalContactId ? request.subject.externalContactId : "" : "";
-            const dialerContactId = request.subject ? request.subject.dialerContactId ? request.subject.dialerContactId.id : "" : "";
-            const createdDate = moment(request.createdDate).fromNow();
-            var createdBy;
+          identifyCreatedByUserId(request).then((createdBy) => {
 
-            // Get user's name
-            getUser(request.createdBy.id).then((user) => {
-              // Display the card with the user's name
-              createdBy = user.name;
-              $("#cards").append(createCard(type, status, name, phoneNumber, address, emailAddress, createdBy, createdDate, userId, externalContactId, dialerContactId));
+            var userId = request.subject ? request.subject.userId ? request.subject.userId : "" : "";
+            identifyUserId(request).then((username) => {
+              console.log("username: " + username);
+              const type = request.requestType;
+              const status = request.status;
+              const phoneNumber = request.subject ? request.subject.phoneNumbers ? request.subject.phoneNumbers[0] : "" : "";
+              const address = request.subject ? request.subject.addresses ? request.subject.addresses[0] : "" : "";
+              const emailAddress = request.subject ? request.subject.emailAddresses ? request.subject.emailAddresses[0] : "" : "";
+              const externalContactId = request.subject ? request.subject.externalContactId ? request.subject.externalContactId : "" : "";
+              const dialerContactId = request.subject ? request.subject.dialerContactId ? request.subject.dialerContactId.id : "" : "";
+              const createdDate = moment(request.createdDate).fromNow();
+
+              $("#cards").append(createCard(type, status, username, phoneNumber, address, emailAddress, createdBy, createdDate, userId, externalContactId, dialerContactId));
+
             }).catch((error) => {
               console.error(error);
-              // Display the card with the user id
-              createdBy = request.createdBy.id;
-              $("#cards").append(createCard(type, status, name, phoneNumber, address, emailAddress, createdBy, createdDate, userId, externalContactId, dialerContactId));
             });
-          }
-        } catch (error) {
-          console.error(error);
-          showMessage(error, true);
+          }).catch((error) => {
+            console.error(error);
+          });
         }
-      }).catch((err) => {
-        console.error("Failed to get current GDPR requests");
+      }).catch((error) => {
+        console.error(error);
       });
+    }
+
+    function identifyCreatedByUserId(request) {
+      var promise = new Promise(function (resolve, reject) {
+        getUser(request.createdBy.id).then((user) => {
+          // Use the created by user's name
+          console.log(request.createdBy.id + " name is " + user.name);
+          resolve(user.name);
+        }).catch((error) => {
+          // Error (user probably does not exist). Use the created by user id
+          resolve(request.createdBy.id);
+        });
+      });
+      return promise;
+    }
+
+    function identifyUserId(request) {
+      var promise = new Promise(function (resolve, reject) {
+        var userId = request.subject ? request.subject.userId ? request.subject.userId : "" : "";
+        if (!userId) {
+          // No user id present
+          resolve("");
+        } else {
+          // We have a user id
+          getUser(userId).then((user) => {
+            // Use the user's name
+            resolve(user.name);
+          }).catch((error) => {
+            // Use the user id
+            resolve(userId);
+          });
+        }
+      });
+      return promise;
     }
 
     function createCard(type, status, name, phoneNumber, address, email, createdBy, createdDate, userId, externalContactId, dialerContactId) {
