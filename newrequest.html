@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 
+<!-- TODO Add Categories for search results -->
+<!-- TODO Add confirmation dialog when clicking on submit request to show the number -->
+
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,shrink-to-fit=no">
@@ -13,7 +16,7 @@
   <link href="/static/css/index.css" rel="stylesheet">
 </head>
 
-<body style="width: 500px;">
+<body style="width: 480px;">
   <noscript>You need to enable JavaScript to run this app.</noscript>
 
   <!--#region Navbar -->
@@ -161,6 +164,9 @@
         var userIdSection = document.createElement("h6");
         userIdSection.className = "card-text small mr-1";
         userIdSection.innerHTML = `<i class="fas fa-id-card"></i> ${userId}`;
+        userIdSection.setAttribute("data-toggle", "tooltip");
+        userIdSection.setAttribute("data-placement", "top");
+        userIdSection.setAttribute("title", "User Id");
         body.append(userIdSection);
       }
 
@@ -169,6 +175,9 @@
         var nameSection = document.createElement("h6");
         nameSection.className = "card-text small mr-1";
         nameSection.innerHTML = `<i class="fas fa-user-circle"></i> ${name}`;
+        nameSection.setAttribute("data-toggle", "tooltip");
+        nameSection.setAttribute("data-placement", "top");
+        nameSection.setAttribute("title", "Name");
         body.append(nameSection);
       }
 
@@ -177,6 +186,9 @@
         var phoneNumberSection = document.createElement("h6");
         phoneNumberSection.className = "card-text small mr-1";
         phoneNumberSection.innerHTML = `<i class="fas fa-phone"></i> ${phoneNumber}`;
+        phoneNumberSection.setAttribute("data-toggle", "tooltip");
+        phoneNumberSection.setAttribute("data-placement", "top");
+        phoneNumberSection.setAttribute("title", "Phone Number");
         body.append(phoneNumberSection);
       }
 
@@ -185,6 +197,9 @@
         var addressSection = document.createElement("h6");
         addressSection.className = "card-text small mr-1";
         addressSection.innerHTML = `<i class="fas fa-address-card"></i> ${address}`;
+        addressSection.setAttribute("data-toggle", "tooltip");
+        addressSection.setAttribute("data-placement", "top");
+        addressSection.setAttribute("title", "Address");
         body.append(addressSection);
       }
 
@@ -193,6 +208,9 @@
         var emailSection = document.createElement("h6");
         emailSection.className = "card-text small mr-1";
         emailSection.innerHTML = `<i class="fas fa-envelope"></i> ${email}`;
+        emailSection.setAttribute("data-toggle", "tooltip");
+        emailSection.setAttribute("data-placement", "top");
+        emailSection.setAttribute("title", "Email Address");
         body.append(emailSection);
       }
 
@@ -216,14 +234,20 @@
       if (dialerContactIdId) {
         var dialerContactIdSection = document.createElement("small");
         dialerContactIdSection.setAttribute("id", "dialerContactId");
-        dialerContactIdSection.innerHTML = `<i class="fas fa-sign-out-alt ml-1"></i>${dialerContactIdId}`;
+        dialerContactIdSection.innerHTML = `<i class="fas fa-sign-out-alt ml-1"></i> ${dialerContactIdId}`;
+        dialerContactIdSection.setAttribute("data-toggle", "tooltip");
+        dialerContactIdSection.setAttribute("data-placement", "top");
+        dialerContactIdSection.setAttribute("title", "Dialer Contact Id");
         idSection.append(dialerContactIdSection);
       }
 
       if (dialerContactIdContactListId) {
         var dialerContactIdContactListIdSection = document.createElement("small");
         dialerContactIdContactListIdSection.setAttribute("id", "dialerContactId");
-        dialerContactIdContactListIdSection.innerHTML = `<i class="fas fa-sign-out-alt ml-1"></i>${dialerContactIdContactListIdSection}`;
+        dialerContactIdContactListIdSection.innerHTML = `<i class="fas fa-sign-out-alt ml-1"></i> ${dialerContactIdContactListId}`;
+        dialerContactIdContactListIdSection.setAttribute("data-toggle", "tooltip");
+        dialerContactIdContactListIdSection.setAttribute("data-placement", "top");
+        dialerContactIdContactListIdSection.setAttribute("title", "Dialer Contact List Id");
         idSection.append(dialerContactIdContactListIdSection);
       }
 
@@ -231,7 +255,10 @@
       if (externalContactId) {
         var externalContactIdSection = document.createElement("small");
         externalContactIdSection.setAttribute("id", "externalContactId");
-        externalContactIdSection.innerHTML = `<i class="fas fa-list-ul ml-1"></i>${externalContactId}`;
+        externalContactIdSection.innerHTML = `<i class="fas fa-list-ul ml-1"></i> ${externalContactId}`;
+        externalContactIdSection.setAttribute("data-toggle", "tooltip");
+        externalContactIdSection.setAttribute("data-placement", "top");
+        externalContactIdSection.setAttribute("title", "External Contact Id");
         idSection.append(externalContactIdSection);
       }
 
@@ -260,14 +287,17 @@
 
       submitButtonDiv.append(submitButton);
 
+      col.append(idSection);
       col.append(submitButtonDiv);
 
-      col.append(idSection);
       footer.append(col);
 
       cardDiv.append(footer);
 
       //#endregion
+
+      // Activate bootstrap tooltips
+      $("[data-toggle='tooltip']").tooltip();
 
       return cardDiv;
     }
