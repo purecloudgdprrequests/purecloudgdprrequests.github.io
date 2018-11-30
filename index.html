@@ -44,7 +44,7 @@
 
   <div class="container mt-2">
     <div>
-      <h6 class="text-center">Current Requests</h6>
+      <h6 id="currentRequests" class="text-center">Current Requests</h6>
       <hr />
     </div>
 
@@ -84,6 +84,8 @@
         for (let i = 0; i < requests.entities.length; i++) {
           $("#cards").empty();
           const request = requests.entities[i];
+
+          $("#currentRequests").text(`Current Requests (${requests.entities.length})`);
 
           identifyCreatedByUserId(request).then((createdBy) => {
 
@@ -131,8 +133,12 @@
       var promise = new Promise(function (resolve, reject) {
         var userId = request.subject ? request.subject.userId ? request.subject.userId : "" : "";
         if (!userId) {
-          // No user id present
-          resolve("");
+          // No user id present. Any other fields present?
+          if (request.subject.name) {
+            resolve(request.subject.name);
+          } else {
+            resolve("");
+          }
         } else {
           // We have a user id
           getUser(userId).then((user) => {
@@ -214,6 +220,9 @@
         var nameSection = document.createElement("h6");
         nameSection.className = "card-text small mr-1 ml-1";
         nameSection.innerHTML = `<i class="fas fa-user-circle"></i> ${name}`;
+        nameSection.setAttribute("data-toggle", "tooltip");
+        nameSection.setAttribute("data-placement", "top");
+        nameSection.setAttribute("title", "Name");
         rowDiv.append(nameSection);
       }
 
@@ -222,6 +231,9 @@
         var phoneNumberSection = document.createElement("h6");
         phoneNumberSection.className = "card-text small mr-1 ml-1";
         phoneNumberSection.innerHTML = `<i class="fas fa-phone"></i> ${phoneNumber}`;
+        phoneNumberSection.setAttribute("data-toggle", "tooltip");
+        phoneNumberSection.setAttribute("data-placement", "top");
+        phoneNumberSection.setAttribute("title", "Phone Number");
         rowDiv.append(phoneNumberSection);
       }
 
@@ -230,6 +242,9 @@
         var addressSection = document.createElement("h6");
         addressSection.className = "card-text small mr-1 ml-1";
         addressSection.innerHTML = `<i class="fas fa-address-card"></i> ${address}`;
+        addressSection.setAttribute("data-toggle", "tooltip");
+        addressSection.setAttribute("data-placement", "top");
+        addressSection.setAttribute("title", "Address");
         rowDiv.append(addressSection);
       }
 
@@ -238,6 +253,9 @@
         var emailSection = document.createElement("h6");
         emailSection.className = "card-text small mr-1 ml-1";
         emailSection.innerHTML = `<i class="fas fa-envelope"></i> ${email}`;
+        emailSection.setAttribute("data-toggle", "tooltip");
+        emailSection.setAttribute("data-placement", "top");
+        emailSection.setAttribute("title", "Email Address");
         rowDiv.append(emailSection);
       }
 
