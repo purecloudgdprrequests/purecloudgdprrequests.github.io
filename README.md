@@ -31,7 +31,9 @@ How it looks in PureCloud
 * Mark it as Active
 * Do a hard refresh (CTRL+F5 or CTRL+R in Google Chrome). If the app does not appear, logout and log back in.
 
-## Known issues/limitations
+## Known issues/limitations/TODOs
 
-* Does not support GDPR_UPDATE requests (yet)
-* Requests are not sorted by `Created Date` because each request to the Users API does not take the same amount of time
+* Does not support GDPR_UPDATE requests (yet). Need to add a new form (modal?) to add replacement fields
+* Requests are not sorted by `Created Date` because each request to the Users API does not take the same amount of time for each card
+* Add Categories for search results (using Bootstrap accordion)
+* Add confirmation dialog when clicking on submit request for a delete request to show the number of records that will be deleted
