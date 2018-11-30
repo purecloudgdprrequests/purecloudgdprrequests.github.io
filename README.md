@@ -8,7 +8,6 @@ How it looks in PureCloud
 
 ![PureCloud Screenshot](https://github.com/purecloudgdprrequests/purecloudgdprrequests.github.io/blob/master/assets/images/purecloudscreenshot.jpg?raw=true)
 
-
 ## Installation
 
 * Clone this repository
@@ -33,6 +32,7 @@ How it looks in PureCloud
 
 ## Known issues/limitations/TODOs
 
+* Only works in .ie region for now
 * Does not support GDPR_UPDATE requests (yet). Need to add a new form (modal?) to add replacement fields
 * Requests are not sorted by `Created Date` because each request to the Users API does not take the same amount of time for each card
 * Add Categories for search results (using Bootstrap accordion)
