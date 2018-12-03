@@ -214,9 +214,8 @@
       if (status == "COMPLETED" && type == "GDPR_EXPORT") {
         if (resultsUrl) {
           var downloadLink = document.createElement("a");
-          console.log("old resultsUrl: " + resultsUrl);
+          //This is due to an issue in PureCloud which provides links like "https:/app.my" instead of "https://apps.my" (missing a forward slash)
           resultsUrl = resultsUrl.replace("https:/", "https://");
-          console.log("new resultsUrl: " + resultsUrl);
           downloadLink.setAttribute("href", resultsUrl);
           downloadLink.innerHTML = `<a href="${resultsUrl}"><i class="fas fa-download fa-2x text-warning" data-toggle="tooltip" data-placement="top" title="Download"></i></a> `;
           header.append(downloadLink);
