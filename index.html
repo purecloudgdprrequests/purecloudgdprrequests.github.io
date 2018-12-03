@@ -103,14 +103,14 @@
               if (type == "GDPR_EXPORT" && status == "COMPLETED") {
                 getGDPRRequest(request.id).then((data) => {
                   resultsUrl = data.resultsUrl;
-                  $("#cards").append(createCard(type, status, username, phoneNumber, address, emailAddress, createdBy, createdDate, userId, externalContactId, dialerContactId, resultsUrl));
+                  $("#cards").append(createCard(request.id, type, status, username, phoneNumber, address, emailAddress, createdBy, createdDate, userId, externalContactId, dialerContactId, resultsUrl));
                   return;
                 }).catch((error) => {
                   console.error(error);
                 });
               }
 
-              $("#cards").append(createCard(type, status, username, phoneNumber, address, emailAddress, createdBy, createdDate, userId, externalContactId, dialerContactId, resultsUrl));
+              $("#cards").append(createCard(request.id, type, status, username, phoneNumber, address, emailAddress, createdBy, createdDate, userId, externalContactId, dialerContactId, resultsUrl));
 
             }).catch((error) => {
               console.error(error);
@@ -161,7 +161,7 @@
       return promise;
     }
 
-    function createCard(type, status, name, phoneNumber, address, email, createdBy, createdDate, userId, externalContactId, dialerContactId, resultsUrl) {
+    function createCard(requestId, type, status, name, phoneNumber, address, email, createdBy, createdDate, userId, externalContactId, dialerContactId, resultsUrl) {
       var cardDiv = document.createElement("div")
       cardDiv.className = "card shadow mt-2";
 
@@ -212,18 +212,36 @@
       header.innerHTML += `${name ? name : ""} <div class="float-right">${status}</div>`;
 
       // Download button
-      var downloadLink = document.createElement("a");
-      downloadLink.setAttribute("href", resultsUrl);
-      downloadLink.innerHTML = `<i class="fas fa-download fa-2x text-warning" data-toggle="tooltip" data-placement="top" title="Download"></i> `;
+      var downloadButton = document.createElement("button");
+      downloadButton.setAttribute("id", `button-${requestId}`);
+      downloadButton.innerHTML = '<i class="fas fa-download"></i> Download';
+      downloadButton.className = "btn btn-sm btn-warning";
 
-      console.log(`${type} ${status} ${name} ${resultsUrl}`);
       if (status == "COMPLETED" && type == "GDPR_EXPORT") {
         if (resultsUrl) {
-          header.append(downloadLink);
+          header.append(downloadButton);
+          $(document).on("click", `#button-${requestId}`, function () {
+            console.log('clicked');
+            window.location.href = resultsUrl;
+          });
         } else {
           header.append("(No results)");
         }
       }
+
+
+      // var downloadLink = document.createElement("a");
+      // downloadLink.setAttribute("href", resultsUrl);
+      // downloadLink.innerHTML = `<i class="fas fa-download fa-2x text-warning" data-toggle="tooltip" data-placement="top" title="Download"></i> `;
+
+      // console.log(`${type} ${status} ${name} ${resultsUrl}`);
+      // if (status == "COMPLETED" && type == "GDPR_EXPORT") {
+      //   if (resultsUrl) {
+      //     header.append(downloadLink);
+      //   } else {
+      //     header.append("(No results)");
+      //   }
+      // }
 
       cardDiv.append(header);
 

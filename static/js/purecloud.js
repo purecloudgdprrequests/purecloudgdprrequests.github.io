@@ -114,7 +114,6 @@ function getGDPRRequest(reqId) {
 
       apiInstance.getGdprRequest(reqId)
         .then(function (data) {
-          console.log(`getGdprRequest success! data: ${JSON.stringify(data, null, 2)}`);
           resolve(data);
         })
         .catch(function (err) {
