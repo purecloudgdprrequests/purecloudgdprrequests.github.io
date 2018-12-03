@@ -89,7 +89,6 @@
 
             var userId = request.subject ? request.subject.userId ? request.subject.userId : "" : "";
             identifyUserId(request).then((username) => {
-              console.log("username: " + username);
               const type = request.requestType;
               const status = request.status;
               const phoneNumber = request.subject ? request.subject.phoneNumbers ? request.subject.phoneNumbers[0] : "" : "";
@@ -98,8 +97,20 @@
               const externalContactId = request.subject ? request.subject.externalContactId ? request.subject.externalContactId : "" : "";
               const dialerContactId = request.subject ? request.subject.dialerContactId ? request.subject.dialerContactId.id : "" : "";
               const createdDate = moment(request.createdDate).fromNow();
+              var resultsUrl;
 
-              $("#cards").append(createCard(type, status, username, phoneNumber, address, emailAddress, createdBy, createdDate, userId, externalContactId, dialerContactId));
+              // Add resultsUrl if this is a GDPR_EXPORT COMPLETED request
+              if (type == "GDPR_EXPORT" && status == "COMPLETED") {
+                getGDPRRequest(request.id).then((data) => {
+                  resultsUrl = data.resultsUrl;
+                  $("#cards").append(createCard(type, status, username, phoneNumber, address, emailAddress, createdBy, createdDate, userId, externalContactId, dialerContactId, resultsUrl));
+                  return;
+                }).catch((error) => {
+                  console.error(error);
+                });
+              }
+
+              $("#cards").append(createCard(type, status, username, phoneNumber, address, emailAddress, createdBy, createdDate, userId, externalContactId, dialerContactId, resultsUrl));
 
             }).catch((error) => {
               console.error(error);
@@ -117,7 +128,6 @@
       var promise = new Promise(function (resolve, reject) {
         getUser(request.createdBy.id).then((user) => {
           // Use the created by user's name
-          console.log(request.createdBy.id + " name is " + user.name);
           resolve(user.name);
         }).catch((error) => {
           // Error (user probably does not exist). Use the created by user id
@@ -151,7 +161,7 @@
       return promise;
     }
 
-    function createCard(type, status, name, phoneNumber, address, email, createdBy, createdDate, userId, externalContactId, dialerContactId) {
+    function createCard(type, status, name, phoneNumber, address, email, createdBy, createdDate, userId, externalContactId, dialerContactId, resultsUrl) {
       var cardDiv = document.createElement("div")
       cardDiv.className = "card shadow mt-2";
 
@@ -199,7 +209,21 @@
           break;
       }
 
-      header.innerHTML += `${name ? name : ""}<div class="float-right">${status}</div>`;
+      header.innerHTML += `${name ? name : ""} <div class="float-right">${status}</div>`;
+
+      // Download button
+      var downloadLink = document.createElement("a");
+      downloadLink.setAttribute("href", resultsUrl);
+      downloadLink.innerHTML = `<i class="fas fa-download fa-2x text-warning" data-toggle="tooltip" data-placement="top" title="Download"></i> `;
+
+      console.log(`${type} ${status} ${name} ${resultsUrl}`);
+      if (status == "COMPLETED" && type == "GDPR_EXPORT") {
+        if (resultsUrl) {
+          header.append(downloadLink);
+        } else {
+          header.append("(No results)");
+        }
+      }
 
       cardDiv.append(header);
 
