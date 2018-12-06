@@ -102,20 +102,21 @@
               const externalContactId = request.subject ? request.subject.externalContactId ? request.subject.externalContactId : "" : "";
               const dialerContactId = request.subject ? request.subject.dialerContactId ? request.subject.dialerContactId.id : "" : "";
               const createdDate = moment(request.createdDate).fromNow();
+              const replacementTerms = request.replacementTerms ? request.replacementTerms : "";
               var resultsUrl;
 
               // Add resultsUrl if this is a GDPR_EXPORT COMPLETED request
               if (type == "GDPR_EXPORT" && status == "COMPLETED") {
                 getGDPRRequest(request.id).then((data) => {
                   resultsUrl = data.resultsUrl;
-                  $("#cards").append(createCard(request.id, type, status, username, phoneNumber, address, emailAddress, createdBy, createdDate, userId, externalContactId, dialerContactId, resultsUrl));
+                  $("#cards").append(createCard(request.id, type, status, username, phoneNumber, address, emailAddress, createdBy, createdDate, userId, externalContactId, dialerContactId, resultsUrl, replacementTerms));
                   return;
                 }).catch((error) => {
                   console.error(error);
                 });
               }
 
-              $("#cards").append(createCard(request.id, type, status, username, phoneNumber, address, emailAddress, createdBy, createdDate, userId, externalContactId, dialerContactId, resultsUrl));
+              $("#cards").append(createCard(request.id, type, status, username, phoneNumber, address, emailAddress, createdBy, createdDate, userId, externalContactId, dialerContactId, resultsUrl, replacementTerms));
 
             }).catch((error) => {
               console.error(error);
@@ -166,7 +167,7 @@
       return promise;
     }
 
-    function createCard(requestId, type, status, name, phoneNumber, address, email, createdBy, createdDate, userId, externalContactId, dialerContactId, resultsUrl) {
+    function createCard(requestId, type, status, name, phoneNumber, address, email, createdBy, createdDate, userId, externalContactId, dialerContactId, resultsUrl, replacementTerms) {
       var cardDiv = document.createElement("div")
       cardDiv.className = "card shadow mt-2";
 
@@ -214,7 +215,15 @@
           break;
       }
 
-      header.innerHTML += `${name ? name : ""} <div class="float-right">${status}</div>`;
+      if (name) {
+        header.innerHTML += `${name ? name : ""} <div class="float-right">${status}</div>`;
+      } else if (address) {
+        header.innerHTML += `${address ? address : ""} <div class="float-right">${status}</div>`;
+      } else if (phoneNumber) {
+        header.innerHTML += `${phoneNumber ? phoneNumber : ""} <div class="float-right">${status}</div>`;
+      } else if (email) {
+        header.innerHTML += `${email ? email : ""} <div class="float-right">${status}</div>`;
+      }
 
       if (status == "COMPLETED" && type == "GDPR_EXPORT") {
         if (resultsUrl) {
@@ -247,40 +256,76 @@
       if (name) {
         var nameSection = document.createElement("h6");
         nameSection.className = "card-text small mr-1 ml-1";
-        nameSection.innerHTML = `<i class="fas fa-user-circle"></i> ${name}`;
+        if (type == "GDPR_UPDATE") {
+          for (let i = 0; i < replacementTerms.length; i++) {
+            const replacementTerm = replacementTerms[i];
+            if (replacementTerm.type == "NAME") {
+              nameSection.innerHTML = `<i class="fas fa-user-circle"></i> ${replacementTerm.existingValue} <i class="far fa-arrow-alt-circle-right text-danger"></i> ${replacementTerm.updatedValue}`;
+            }
+          }
+        } else {
+          nameSection.innerHTML = `<i class="fas fa-user-circle"></i> ${name}`;
+        }
         nameSection.setAttribute("data-toggle", "tooltip");
         nameSection.setAttribute("data-placement", "top");
         nameSection.setAttribute("title", "Name");
         rowDiv.append(nameSection);
       }
 
-      // Phone Number
-      if (phoneNumber) {
-        var phoneNumberSection = document.createElement("h6");
-        phoneNumberSection.className = "card-text small mr-1 ml-1";
-        phoneNumberSection.innerHTML = `<i class="fas fa-phone"></i> ${phoneNumber}`;
-        phoneNumberSection.setAttribute("data-toggle", "tooltip");
-        phoneNumberSection.setAttribute("data-placement", "top");
-        phoneNumberSection.setAttribute("title", "Phone Number");
-        rowDiv.append(phoneNumberSection);
-      }
-
       // Address
       if (address) {
         var addressSection = document.createElement("h6");
         addressSection.className = "card-text small mr-1 ml-1";
-        addressSection.innerHTML = `<i class="fas fa-address-card"></i> ${address}`;
+        if (type == "GDPR_UPDATE") {
+          for (let i = 0; i < replacementTerms.length; i++) {
+            const replacementTerm = replacementTerms[i];
+            if (replacementTerm.type == "ADDRESS") {
+              addressSection.innerHTML = `<i class="fas fa-user-circle"></i> ${replacementTerm.existingValue} <i class="far fa-arrow-alt-circle-right text-danger"></i> ${replacementTerm.updatedValue}`;
+            }
+          }
+        } else {
+          addressSection.innerHTML = `<i class="fas fa-address-card"></i> ${address}`;
+        }
         addressSection.setAttribute("data-toggle", "tooltip");
         addressSection.setAttribute("data-placement", "top");
         addressSection.setAttribute("title", "Address");
         rowDiv.append(addressSection);
       }
 
+      // Phone Number
+      if (phoneNumber) {
+        var phoneNumberSection = document.createElement("h6");
+        phoneNumberSection.className = "card-text small mr-1 ml-1";
+        if (type == "GDPR_UPDATE") {
+          for (let i = 0; i < replacementTerms.length; i++) {
+            const replacementTerm = replacementTerms[i];
+            if (replacementTerm.type == "PHONE") {
+              phoneNumberSection.innerHTML = `<i class="fas fa-user-circle"></i> ${replacementTerm.existingValue} <i class="far fa-arrow-alt-circle-right text-danger"></i> ${replacementTerm.updatedValue}`;
+            }
+          }
+        } else {
+          phoneNumberSection.innerHTML = `<i class="fas fa-phone"></i> ${phoneNumber}`;
+        }
+        phoneNumberSection.setAttribute("data-toggle", "tooltip");
+        phoneNumberSection.setAttribute("data-placement", "top");
+        phoneNumberSection.setAttribute("title", "Phone Number");
+        rowDiv.append(phoneNumberSection);
+      }
+
       // Email
       if (email) {
         var emailSection = document.createElement("h6");
         emailSection.className = "card-text small mr-1 ml-1";
-        emailSection.innerHTML = `<i class="fas fa-envelope"></i> ${email}`;
+        if (type == "GDPR_UPDATE") {
+          for (let i = 0; i < replacementTerms.length; i++) {
+            const replacementTerm = replacementTerms[i];
+            if (replacementTerm.type == "EMAIL") {
+              emailSection.innerHTML = `<i class="fas fa-user-circle"></i> ${replacementTerm.existingValue} <i class="far fa-arrow-alt-circle-right text-danger"></i> ${replacementTerm.updatedValue}`;
+            }
+          }
+        } else {
+          emailSection.innerHTML = `<i class="fas fa-envelope"></i> ${email}`;
+        }
         emailSection.setAttribute("data-toggle", "tooltip");
         emailSection.setAttribute("data-placement", "top");
         emailSection.setAttribute("title", "Email Address");
