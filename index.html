@@ -52,6 +52,8 @@
 
   <!--#endregion -->
 
+  <!--#region required scripts -->
+
   <!-- Load scripts at the end for lazy loading -->
   <script src="/node_modules/jquery/dist/jquery.min.js"></script>
   <script src="/node_modules/popper.js/dist/umd/popper.min.js"></script>
@@ -62,6 +64,9 @@
   <script src="/static/js/notifications.js"></script>
   <script src="/static/js/purecloud.js"></script>
 
+  <!--#endregion -->
+
+  <!-- Our scripts -->
   <script>
 
     // Refresh button
@@ -214,8 +219,10 @@
       if (status == "COMPLETED" && type == "GDPR_EXPORT") {
         if (resultsUrl) {
           var downloadLink = document.createElement("a");
-          //This is due to an issue in PureCloud which provides links like "https:/app.my" instead of "https://apps.my" (missing a forward slash)
-          resultsUrl = resultsUrl.replace("https:/", "https://");
+          if (!resultsUrl.startsWith("https://")) {
+            //This is due to an issue in PureCloud which provides links like "https:/app.my" instead of "https://apps.my" (missing a forward slash)
+            resultsUrl = resultsUrl.replace("https:/", "https://");
+          }
           downloadLink.setAttribute("href", resultsUrl);
           downloadLink.innerHTML = `<a href="${resultsUrl}"><i class="fas fa-download fa-2x text-warning" data-toggle="tooltip" data-placement="top" title="Download"></i></a> `;
           header.append(downloadLink);
