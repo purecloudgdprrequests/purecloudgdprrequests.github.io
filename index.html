@@ -84,13 +84,21 @@
     function loadCards() {
 
       getGDPRRequests().then(async (requests) => {
+        if (!requests || !requests.entities) {
+          console.log("No requests found");
+          return;
+        }
         for (let i = 0; i < requests.entities.length; i++) {
           $("#cards").empty();
           const request = requests.entities[i];
 
-          $("#currentRequests").text(`Current Requests (${requests.entities.length})`);
+          $("#currentRequests").text(`Current Requests (${requests.entities ? requests.entities.length : null})`);
 
           identifyCreatedByUserId(request).then((createdBy) => {
+            // Temporarily remove Eric's XSS attack
+            // if (createdBy == "Eric Cohen") {
+            //   return true;
+            // }
 
             var userId = request.subject ? request.subject.userId ? request.subject.userId : "" : "";
             identifyUserId(request).then((username) => {
@@ -108,8 +116,7 @@
               // Add resultsUrl if this is a GDPR_EXPORT COMPLETED request
               if (type == "GDPR_EXPORT" && status == "COMPLETED") {
                 getGDPRRequest(request.id).then((data) => {
-                  resultsUrl = data.resultsUrl;
-                  $("#cards").append(createCard(request.id, type, status, username, phoneNumber, address, emailAddress, createdBy, createdDate, userId, externalContactId, dialerContactId, resultsUrl, replacementTerms));
+                  $("#cards").append(createCard(request.id, type, status, username, phoneNumber, address, emailAddress, createdBy, createdDate, userId, externalContactId, dialerContactId, data.resultsUrl, replacementTerms));
                   return;
                 }).catch((error) => {
                   console.error(error);
@@ -149,7 +156,7 @@
         if (!userId) {
           // No user id present. Any other fields present?
           if (request.subject.name) {
-            resolve(request.subject.name);
+            resolve(encodeURI(request.subject.name));
           } else {
             resolve("");
           }
@@ -173,26 +180,22 @@
 
       //#region Header
 
-      var header = document.createElement("h6");
-      header.className = "card-header small";
+      var $headerDiv = $("<h6/>", { class: "card-header small" }).appendTo(cardDiv);
 
       // Status
       switch (status) {
         case "COMPLETED":
-          header.classList.add("bg-success");
-          header.classList.add("text-light");
+          $headerDiv.addClass("bg-success text-light");
           break;
         case "INITIATED":
         case "DELETING":
         case "FINALIZING":
         case "SEARCHING":
         case "UPDATING":
-          header.classList.add("bg-warning");
-          header.classList.add("text-dark");
+          $headerDiv.addClass("bg-warning text-dark");
           break;
         case "ERROR":
-          header.classList.add("bg-danger");
-          header.classList.add("text-light");
+          $headerDiv.addClass("bg-danger text-light");
           break;
         default:
           console.error(`Unknown status: ${status}`);
@@ -202,13 +205,13 @@
       // Type
       switch (type) {
         case "GDPR_EXPORT":
-          header.innerHTML = `<i class="fas fa-file-export" data-toggle="tooltip" data-placement="top" title="Export"></i> `;
+          $headerDiv.append(`<i class="fas fa-file-export" data-toggle="tooltip" data-placement="top" title="Export"></i> `);
           break;
         case "GDPR_DELETE":
-          header.innerHTML = `<i class="fas fa-trash" data-toggle="tooltip" data-placement="top" title="Delete"></i> `;
+          $headerDiv.append(`<i class="fas fa-trash" data-toggle="tooltip" data-placement="top" title="Delete"></i> `);
           break;
         case "GDPR_UPDATE":
-          header.innerHTML = `<i class="fas fa-refresh" data-toggle="tooltip" data-placement="top" title="Update"></i> `;
+          $headerDiv.append(`<i class="fas fa-refresh" data-toggle="tooltip" data-placement="top" title="Update"></i> `);
           break;
         default:
           console.error(`Unknown type: ${type}`);
@@ -216,31 +219,30 @@
       }
 
       if (name) {
-        header.innerHTML += `${name ? name : ""} <div class="float-right">${status}</div>`;
+        $headerDiv.append(`${name ? name : ""} <div class="float-right">${status}</div>`);
       } else if (address) {
-        header.innerHTML += `${address ? address : ""} <div class="float-right">${status}</div>`;
+        $headerDiv.append(`${address ? address : ""} <div class="float-right">${status}</div>`);
       } else if (phoneNumber) {
-        header.innerHTML += `${phoneNumber ? phoneNumber : ""} <div class="float-right">${status}</div>`;
+        $headerDiv.append(`${phoneNumber ? phoneNumber : ""} <div class="float-right">${status}</div>`);
       } else if (email) {
-        header.innerHTML += `${email ? email : ""} <div class="float-right">${status}</div>`;
+        $headerDiv.append(`${email ? email : ""} <div class="float-right">${status}</div>`);
       }
 
       if (status == "COMPLETED" && type == "GDPR_EXPORT") {
         if (resultsUrl) {
-          var downloadLink = document.createElement("a");
+          console.log(resultsUrl);
           if (!resultsUrl.startsWith("https://")) {
             //This is due to an issue in PureCloud which provides links like "https:/app.my" instead of "https://apps.my" (missing a forward slash)
             resultsUrl = resultsUrl.replace("https:/", "https://");
           }
-          downloadLink.setAttribute("href", resultsUrl);
-          downloadLink.innerHTML = `<a href="${resultsUrl}"><i class="fas fa-download fa-2x text-warning" data-toggle="tooltip" data-placement="top" title="Download"></i></a> `;
-          header.append(downloadLink);
+          $("<a/>", { target: "_blank", href: resultsUrl }).html('<i class="fas fa-download fa-2x text-warning" data-toggle="tooltip" data-placement="top" title="Download"></i>').appendTo($headerDiv);
+          //$download.setAttribute("href", resultsUrl);
+          //downloadLink.innerHTML = `<a href="${resultsUrl}"><i class="fas fa-download fa-2x text-warning" data-toggle="tooltip" data-placement="top" title="Download"></i></a> `;
+          //$headerDiv.append(downloadLink);
         } else {
-          header.append("(No results)");
+          $headerDiv.append("(No results)");
         }
       }
-
-      cardDiv.append(header);
 
       //#endregion
 
@@ -264,7 +266,7 @@
             }
           }
         } else {
-          nameSection.innerHTML = `<i class="fas fa-user-circle"></i> ${name}`;
+          nameSection.innerHTML = `<i class="fas fa-user-circle"></i> ${encodeURI(name)}`;
         }
         nameSection.setAttribute("data-toggle", "tooltip");
         nameSection.setAttribute("data-placement", "top");
