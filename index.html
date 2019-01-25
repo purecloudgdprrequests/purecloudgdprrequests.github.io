@@ -219,10 +219,10 @@
       }
 
       // Download button
-      var downloadButton = document.createElement("button");
-      downloadButton.setAttribute("id", `button-${requestId}`);
-      downloadButton.innerHTML = '<i class="fas fa-download"></i> Download';
-      downloadButton.className = "btn btn-sm btn-warning";
+      // var downloadButton = document.createElement("button");
+      // downloadButton.setAttribute("id", `button-${requestId}`);
+      // downloadButton.innerHTML = '<i class="fas fa-download"></i> Download';
+      // downloadButton.className = "btn btn-sm btn-warning";
 
       if (name) {
         $headerDiv.append(`${name ? name : ""} <div class="float-right">${status}</div>`);
@@ -241,12 +241,12 @@
             //This is due to an issue in PureCloud which provides links like "https:/app.my" instead of "https://apps.my" (missing a forward slash)
             resultsUrl = resultsUrl.replace("https:/", "https://");
           }
-          $headerDiv.append(downloadButton);
-          $(document).on("click", `#button-${requestId}`, function () {
-            console.log('clicked');
-            window.location.href = resultsUrl;
-          });
-          //$("<a/>", { target: "_blank", href: resultsUrl}).html('<button>download</button>').appendTo($headerDiv);
+          // $headerDiv.append(downloadButton);
+          // $(document).on("click", `#button-${requestId}`, function () {
+          //   console.log('clicked');
+          //   window.location.href = resultsUrl;
+          // });
+          $("<a/>", { href: resultsUrl }).html('<button>download</button>').appendTo($headerDiv);
           //'<i class="fas fa-download fa-2x text-warning" data-toggle="tooltip" data-placement="top" title="Download"></i>'
           //$download.setAttribute("href", resultsUrl);
           //$downloadLink.innerHTML = `<a href="${resultsUrl}"><i class="fas fa-download fa-2x text-warning" data-toggle="tooltip" data-placement="top" title="Download"></i></a> `;
