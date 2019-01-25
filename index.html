@@ -235,7 +235,7 @@
             //This is due to an issue in PureCloud which provides links like "https:/app.my" instead of "https://apps.my" (missing a forward slash)
             resultsUrl = resultsUrl.replace("https:/", "https://");
           }
-          $("<a/>", { target: "_blank", href: resultsUrl }).html('<i class="fas fa-download fa-2x text-warning" data-toggle="tooltip" data-placement="top" title="Download"></i></a>').appendTo($headerDiv);
+          $("<a/>", { href: resultsUrl }).html('<i class="fas fa-download fa-2x text-warning" data-toggle="tooltip" data-placement="top" title="Download"></i>').appendTo($headerDiv);
           //$download.setAttribute("href", resultsUrl);
           //$downloadLink.innerHTML = `<a href="${resultsUrl}"><i class="fas fa-download fa-2x text-warning" data-toggle="tooltip" data-placement="top" title="Download"></i></a> `;
           //$headerDiv.append(downloadLink);
