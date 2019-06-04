@@ -2,545 +2,547 @@
 <html lang="en">
 
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1,shrink-to-fit=no">
-  <meta name="theme-color" content="#000000">
-  <link rel="shortcut icon" href="/favicon.ico">
-  <link rel="stylesheet" href="/node_modules/bootstrap/dist/css/bootstrap.min.css">
-  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
-  <link href="/node_modules/jquery-toast-plugin/dist/jquery.toast.min.css" rel="stylesheet">
-  <title>Genesys PureCloud GDPR Requests</title>
-  <link href="/static/css/index.css" rel="stylesheet">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,shrink-to-fit=no">
+    <meta name="theme-color" content="#000000">
+    <link rel="shortcut icon" href="/favicon.ico">
+    <link rel="stylesheet" href="/node_modules/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css"
+        integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
+    <link href="/node_modules/jquery-toast-plugin/dist/jquery.toast.min.css" rel="stylesheet">
+    <title>Genesys PureCloud GDPR Requests</title>
+    <link href="/static/css/index.css" rel="stylesheet">
 </head>
 
 <body style="width: 480px;">
-  <noscript>You need to enable JavaScript to run this app.</noscript>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
 
-  <!--#region Navbar -->
+    <!--#region Navbar -->
 
-  <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
 
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav mr-auto">
-        <li class="nav-item active">
-          <a class="nav-link" href="/">Current Requests</a>
-        </li>
-      </ul>
-    </div>
-  </nav>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="/">Current Requests</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
 
-  <!--#endregion -->
+    <!--#endregion -->
 
-  <!--#region New Request Form -->
+    <!--#region New Request Form -->
 
-  <div class="container mt-2">
-    <div>
-      <h6 class="text-center">New Request</h6>
-      <hr />
-    </div>
+    <div class="container mt-2">
+        <div>
+            <h6 class="text-center">New Request</h6>
+            <hr />
+        </div>
 
-    <div class="form-group">
-      <label for="requestType" class="small">Request Type</label>
-      <select class="form-control" id="requestType">
-        <option value="GDPR_DELETE">Delete</option>
-        <option value="GDPR_EXPORT">Export</option>
-        <option value="GDPR_UPDATE">Update</option>
-      </select>
-    </div>
-    <small class="form-text text-muted text-center">Populate at least one of the fields below</small><br />
-    <div class="form-group">
-      <label for="name" class="small">Name</label>
-      <input type="text" class="form-control form-control-sm" id="name" placeholder="Enter a name">
-      <div class="container border border-primary my-1 replace">
-        <label for="replaceName" class="small text-muted">Replace with</label>
-        <input type="text" class="form-control form-control-sm mb-1" id="replaceName" disabled placeholder="Replace with this name">
-      </div>
-    </div>
-    <div class="form-group">
-      <label for="address" class="small">Address</label>
-      <input type="text" class="form-control form-control-sm" id="address" placeholder="Enter an address">
-      <div class="container border border-primary my-1 replace">
-        <label for="replaceAddress" class="small text-muted">Replace with</label>
-        <input type="text" class="form-control form-control-sm mb-1" id="replaceAddress" disabled placeholder="Replace with this address">
-      </div>
-    </div>
-    <div class="form-group">
-      <label for="phoneNumber" class="small">Phone Number</label>
-      <input type="tel" class="form-control form-control-sm" id="phoneNumber" placeholder="Enter a phone number"><!-- value="+33680854089"> -->
-      <div class="container border border-primary my-1 replace">
-        <label for="replacePhoneNumber" class="small text-muted">Replace with</label>
-        <input type="text" class="form-control form-control-sm mb-1" id="replacePhoneNumber" disabled placeholder="Replace with this phone number">
-      </div>
-    </div>
-    <div class="form-group">
-      <label for="email" class="small">Email address</label>
-      <input type="email" class="form-control form-control-sm" id="email" placeholder="Enter an email address">
-      <div class="container border border-primary my-1 replace">
-        <label for="replaceEmail" class="small text-muted">Replace with</label>
-        <input type="text" class="form-control form-control-sm mb-1" id="replaceEmail" disabled placeholder="Replace with this email address">
-      </div>
-    </div>
-    <button id="search" class="btn btn-info float-left" disabled>Search</button>
-    <small id="message" class="text-success ml-2" style="vertical-align:bottom"></small>
-    <div class="float-right">
-      <a href="/" id="cancel" name="cancel" class="btn btn-default">Cancel</a>
-      <button id="submitRequest" type="button" class="btn btn-primary has-spinner" disabled>Submit Request</button>
-    </div>
-  </div>
-
-  <!--#endregion -->
-
-  <!--#region Search Results -->
-
-  <div class="container mt-2" id="searchResults">
-    <div>
-      <hr />
-      <h6 class="text-center">Search Results</h6>
-      <hr />
+        <div class="form-group">
+            <label for="requestType" class="small">Request Type</label>
+            <select class="form-control" id="requestType">
+                <option value="GDPR_DELETE">Delete</option>
+                <option value="GDPR_EXPORT">Export</option>
+                <option value="GDPR_UPDATE">Update</option>
+            </select>
+        </div>
+        <small class="form-text text-muted text-center">Populate at least one of the fields below</small><br />
+        <div class="form-group">
+            <label for="name" class="small">Name</label>
+            <input type="text" class="form-control form-control-sm" id="name" placeholder="Enter a name">
+            <div class="container border border-primary my-1 replace">
+                <label for="replaceName" class="small text-muted">Replace with</label>
+                <input type="text" class="form-control form-control-sm mb-1" id="replaceName" disabled
+                    placeholder="Replace with this name">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="address" class="small">Address</label>
+            <input type="text" class="form-control form-control-sm" id="address" placeholder="Enter an address">
+            <div class="container border border-primary my-1 replace">
+                <label for="replaceAddress" class="small text-muted">Replace with</label>
+                <input type="text" class="form-control form-control-sm mb-1" id="replaceAddress" disabled
+                    placeholder="Replace with this address">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="phoneNumber" class="small">Phone Number</label>
+            <input type="tel" class="form-control form-control-sm" id="phoneNumber" placeholder="Enter a phone number">
+            <!-- value="+33680854089"> -->
+            <div class="container border border-primary my-1 replace">
+                <label for="replacePhoneNumber" class="small text-muted">Replace with</label>
+                <input type="text" class="form-control form-control-sm mb-1" id="replacePhoneNumber" disabled
+                    placeholder="Replace with this phone number">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="email" class="small">Email address</label>
+            <input type="email" class="form-control form-control-sm" id="email" placeholder="Enter an email address">
+            <div class="container border border-primary my-1 replace">
+                <label for="replaceEmail" class="small text-muted">Replace with</label>
+                <input type="text" class="form-control form-control-sm mb-1" id="replaceEmail" disabled
+                    placeholder="Replace with this email address">
+            </div>
+        </div>
+        <button id="search" class="btn btn-info float-left" disabled>Search</button>
+        <small id="message" class="text-success ml-2" style="vertical-align:bottom"></small>
+        <div class="float-right">
+            <a href="/" id="cancel" name="cancel" class="btn btn-default">Cancel</a>
+            <button id="submitRequest" type="button" class="btn btn-primary has-spinner" disabled>Submit
+                Request</button>
+        </div>
     </div>
 
-    <div id="cards"></div>
+    <!--#endregion -->
 
-  </div>
+    <!--#region Search Results -->
 
-  <!--#endregion -->
+    <div class="container mt-2" id="searchResults">
+        <div>
+            <hr />
+            <h6 class="text-center">Search Results</h6>
+            <hr />
+        </div>
 
-  <!--#region Required scripts -->
+        <div id="cards"></div>
 
-  <script src="/node_modules/jquery/dist/jquery.min.js"></script>
-  <script src="/node_modules/popper.js/dist/umd/popper.min.js"></script>
-  <script src="/node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
-  <script src="https://sdk-cdn.mypurecloud.com/javascript/41.0.0/purecloud-platform-client-v2.min.js"></script>
-  <script src="/node_modules/jquery-toast-plugin/dist/jquery.toast.min.js"></script>
-  <script src="/static/js/notifications.js"></script>
-  <script src="/static/js/purecloud.js"></script>
-  <script>
-    // Button spinner
-    (function ($) {
-      $.fn.buttonLoader = function (action) {
-        var self = $(this);
-        //start loading animation
-        if (action == 'start') {
-          if ($(self).attr("disabled") == "disabled") {
-            e.preventDefault();
-          }
-          //disable buttons when loading state
-          $('.has-spinner').attr("disabled", "disabled");
-          $(self).attr('data-btn-text', $(self).text());
-          //binding spinner element to button and changing button text
-          $(self).html('<span class="spinner"><i class="fa fa-spinner fa-spin"></i></span> Submitting');
-          $(self).addClass('active');
+    </div>
+
+    <!--#endregion -->
+
+    <!--#region Required scripts -->
+
+    <script src="/node_modules/jquery/dist/jquery.min.js"></script>
+    <script src="/node_modules/popper.js/dist/umd/popper.min.js"></script>
+    <script src="/node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="https://sdk-cdn.mypurecloud.com/javascript/41.0.0/purecloud-platform-client-v2.min.js"></script>
+    <script src="/node_modules/jquery-toast-plugin/dist/jquery.toast.min.js"></script>
+    <script src="/static/js/notifications.js"></script>
+    <script src="/static/js/purecloud.js"></script>
+    <script>
+        // Button spinner
+        (function ($) {
+            $.fn.buttonLoader = function (action) {
+                var self = $(this);
+                //start loading animation
+                if (action == 'start') {
+                    if ($(self).attr("disabled") == "disabled") {
+                        e.preventDefault();
+                    }
+                    //disable buttons when loading state
+                    $('.has-spinner').attr("disabled", "disabled");
+                    $(self).attr('data-btn-text', $(self).text());
+                    //binding spinner element to button and changing button text
+                    $(self).html('<span class="spinner"><i class="fa fa-spinner fa-spin"></i></span> Submitting');
+                    $(self).addClass('active');
+                }
+                //stop loading animation
+                if (action == 'stop') {
+                    $(self).html($(self).attr('data-btn-text'));
+                    $(self).removeClass('active');
+                    //enable buttons after finish loading
+                    $('.has-spinner').removeAttr("disabled");
+                }
+            }
+        })(jQuery);
+    </script>
+
+    <!--#endregion -->
+
+    <!--#region Our scripts -->
+
+    <script>
+
+        showReplaceFields(false);
+
+        //#region Update
+
+        $("#requestType").change(() => {
+            $("#requestType option:selected").each(() => {
+                var selectedRequestType = $("#requestType").children("option:selected").val();
+                console.log(`Selected request type: ${selectedRequestType}`);
+                if (selectedRequestType == "GDPR_UPDATE") {
+                    // Show replace fields
+                    showReplaceFields(true);
+                } else {
+                    showReplaceFields(false);
+                }
+            });
+        });
+
+        function showReplaceFields(show) {
+            show ? $(".replace").show() : $(".replace").hide();
         }
-        //stop loading animation
-        if (action == 'stop') {
-          $(self).html($(self).attr('data-btn-text'));
-          $(self).removeClass('active');
-          //enable buttons after finish loading
-          $('.has-spinner').removeAttr("disabled");
+
+        var hasName, hasAddress, hasPhoneNumber, hasEmail;
+
+        $("#name").on('input', (e) => {
+            hasName = $("#name").val().length > 0;
+            $("#replaceName").prop("disabled", !hasName);
+            $("#replaceName").attr("placeholder", `Replace ${$("#name").val()} with this name`);
+            updateButtonStatus();
+        });
+
+        $("#address").on('input', (e) => {
+            hasAddress = $("#address").val().length > 0;
+            $("#replaceAddress").prop("disabled", !hasAddress);
+            $("#replaceAddress").attr("placeholder", `Replace ${$("#address").val()} with this address`);
+            updateButtonStatus();
+        });
+
+        $("#phoneNumber").on('input', (e) => {
+            hasPhoneNumber = $("#phoneNumber").val().length > 0;
+            $("#replacePhoneNumber").prop("disabled", !hasPhoneNumber);
+            $("#replacePhoneNumber").attr("placeholder", `Replace ${$("#phoneNumber").val()} with this phone number`);
+            updateButtonStatus();
+        });
+
+        $("#email").on('input', (e) => {
+            hasEmail = $("#email").val().length > 0;
+            $("#replaceEmail").prop("disabled", !hasEmail);
+            $("#replaceEmail").attr("placeholder", `Replace ${$("#email").val()} with this email address`);
+            updateButtonStatus();
+        });
+
+        function updateButtonStatus() {
+            $("#search").prop("disabled", !hasName && !hasAddress && !hasPhoneNumber && !hasEmail);
+            $("#submitRequest").prop("disabled", !hasName && !hasAddress && !hasPhoneNumber && !hasEmail);
         }
-      }
-    })(jQuery);
-  </script>
 
-  <!--#endregion -->
 
-  <!--#region Our scripts -->
+        //#endregion
 
-  <script>
+        //#region Search
 
-    showReplaceFields(false);
+        $("#search").click(() => {
+            let searchType, searchValue;
 
-    //#region Update
+            if ($("#name").val()) {
+                searchType = "NAME";
+                searchValue = $("#name").val();
+            } else if ($("#address").val()) {
+                searchType = "ADDRESS";
+                searchValue = $("#address").val();
+            } else if ($("#phoneNumber").val()) {
+                searchType = "PHONE";
+                searchValue = $("#phoneNumber").val();
+            } else if ($("#email").val()) {
+                searchType = "EMAIL";
+                searchValue = $("#email").val();
+            } else {
+                console.debug("No search parameters found");
+                return;
+            }
 
-    $("#requestType").change(() => {
-      $("#requestType option:selected").each(() => {
-        var selectedRequestType = $("#requestType").children("option:selected").val();
-        console.log(`Selected request type: ${selectedRequestType}`);
-        if (selectedRequestType == "GDPR_UPDATE") {
-          // Show replace fields
-          showReplaceFields(true);
-        } else {
-          showReplaceFields(false);
+            console.log(`Submitting new request. Search Type: ${searchType}, Value: ${searchValue}`);
+            searchForSubject(searchType, searchValue).then((data) => {
+                $("#cards").empty();
+                const items = data.entities;
+                showMessage(`${items.length} ${items.length == 0 || items.length > 1 ? " entries" : " entry"} found`);
+
+                for (let i = 0; i < items.length; i++) {
+                    const item = items[i];
+                    const userId = item.userId ? item.userId : "";
+                    const name = item.name ? item.name : "";
+                    const phoneNumber = item.phoneNumbers ? item.phoneNumbers[0] : "";
+                    const address = item.addresses ? item.addresses[0] : "";
+                    const email = item.emailAddresses ? item.emailAddresses[0] : "";
+                    const externalContactId = item.externalContactId ? item.externalContactId : "";
+                    const dialerContactIdId = item.dialerContactId ? item.dialerContactId.id : "";
+                    const dialerContactIdContactListId = item.dialerContactId ? item.dialerContactId.contactListId : "";
+
+                    $("#cards").append(createCard(userId, name, phoneNumber, address, email, externalContactId, dialerContactIdId, dialerContactIdContactListId));
+                }
+            }).catch((error) => {
+                console.log(error);
+            });
+        });
+
+        function createCard(userId, name, phoneNumber, address, email, externalContactId, dialerContactIdId, dialerContactIdContactListId) {
+            var cardDiv = document.createElement("div");
+            cardDiv.className = "card mt-2";
+
+            //#region Body
+
+            var body = document.createElement("div");
+            body.className = "card-body bg-light row no-gutters shadow-lg";
+
+            // User Id
+            if (userId) {
+                var userIdSection = document.createElement("h6");
+                userIdSection.className = "card-text small mr-1";
+                userIdSection.innerHTML = `<i class="fas fa-id-card"></i> ${userId}`;
+                userIdSection.setAttribute("data-toggle", "tooltip");
+                userIdSection.setAttribute("data-placement", "top");
+                userIdSection.setAttribute("title", "User Id");
+                body.append(userIdSection);
+            }
+
+            // Name
+            if (name) {
+                var nameSection = document.createElement("h6");
+                nameSection.className = "card-text small mr-1";
+                nameSection.innerHTML = `<i class="fas fa-user-circle"></i> ${name}`;
+                nameSection.setAttribute("data-toggle", "tooltip");
+                nameSection.setAttribute("data-placement", "top");
+                nameSection.setAttribute("title", "Name");
+                body.append(nameSection);
+            }
+
+            // Phone Number
+            if (phoneNumber) {
+                var phoneNumberSection = document.createElement("h6");
+                phoneNumberSection.className = "card-text small mr-1";
+                phoneNumberSection.innerHTML = `<i class="fas fa-phone"></i> ${phoneNumber}`;
+                phoneNumberSection.setAttribute("data-toggle", "tooltip");
+                phoneNumberSection.setAttribute("data-placement", "top");
+                phoneNumberSection.setAttribute("title", "Phone Number");
+                body.append(phoneNumberSection);
+            }
+
+            // Address
+            if (address) {
+                var addressSection = document.createElement("h6");
+                addressSection.className = "card-text small mr-1";
+                addressSection.innerHTML = `<i class="fas fa-address-card"></i> ${address}`;
+                addressSection.setAttribute("data-toggle", "tooltip");
+                addressSection.setAttribute("data-placement", "top");
+                addressSection.setAttribute("title", "Address");
+                body.append(addressSection);
+            }
+
+            // Email
+            if (email) {
+                var emailSection = document.createElement("h6");
+                emailSection.className = "card-text small mr-1";
+                emailSection.innerHTML = `<i class="fas fa-envelope"></i> ${email}`;
+                emailSection.setAttribute("data-toggle", "tooltip");
+                emailSection.setAttribute("data-placement", "top");
+                emailSection.setAttribute("title", "Email Address");
+                body.append(emailSection);
+            }
+
+            cardDiv.append(body);
+
+            //#endregion
+
+            //#region Footer
+
+            var footer = document.createElement("div");
+            footer.className = "row no-gutters bg-light";
+
+            var col = document.createElement("col");
+            col.className = "col";
+
+            // External and Dialer Contact Ids
+            var idSection = document.createElement("div");
+            idSection.className = "float-left text-secondary small ml-1";
+
+            // Dialer Contact Id
+            if (dialerContactIdId) {
+                var dialerContactIdSection = document.createElement("small");
+                dialerContactIdSection.setAttribute("id", "dialerContactId");
+                dialerContactIdSection.innerHTML = `<i class="fas fa-sign-out-alt ml-1"></i> ${dialerContactIdId}`;
+                dialerContactIdSection.setAttribute("data-toggle", "tooltip");
+                dialerContactIdSection.setAttribute("data-placement", "top");
+                dialerContactIdSection.setAttribute("title", "Dialer Contact Id");
+                idSection.append(dialerContactIdSection);
+            }
+
+            if (dialerContactIdContactListId) {
+                var dialerContactIdContactListIdSection = document.createElement("small");
+                dialerContactIdContactListIdSection.setAttribute("id", "dialerContactId");
+                dialerContactIdContactListIdSection.innerHTML = `<i class="fas fa-sign-out-alt ml-1"></i> ${dialerContactIdContactListId}`;
+                dialerContactIdContactListIdSection.setAttribute("data-toggle", "tooltip");
+                dialerContactIdContactListIdSection.setAttribute("data-placement", "top");
+                dialerContactIdContactListIdSection.setAttribute("title", "Dialer Contact List Id");
+                idSection.append(dialerContactIdContactListIdSection);
+            }
+
+            // External Contact Id
+            if (externalContactId) {
+                var externalContactIdSection = document.createElement("small");
+                externalContactIdSection.setAttribute("id", "externalContactId");
+                externalContactIdSection.innerHTML = `<i class="fas fa-list-ul ml-1"></i> ${externalContactId}`;
+                externalContactIdSection.setAttribute("data-toggle", "tooltip");
+                externalContactIdSection.setAttribute("data-placement", "top");
+                externalContactIdSection.setAttribute("title", "External Contact Id");
+                idSection.append(externalContactIdSection);
+            }
+
+            // Submit Button
+            var submitButtonDiv = document.createElement("div");
+            submitButtonDiv.className = "float-right text-secondary small";
+
+            var submitButton = document.createElement("button");
+            submitButton.className = "btn btn-info mb-1 mr-1";
+            submitButton.innerHTML = "Select & Submit";
+            submitButton.onclick = () => {
+                console.log("Button clicked for user id: " + userId);
+                console.log("email: " + email);
+                submitRequest(
+                    $("#requestType").children("option:selected").val(),
+                    name,
+                    userId,
+                    externalContactId,
+                    dialerContactIdId,
+                    dialerContactIdContactListId,
+                    [address],
+                    [phoneNumber],
+                    [email]
+                );
+            };
+
+            submitButtonDiv.append(submitButton);
+
+            col.append(idSection);
+            col.append(submitButtonDiv);
+
+            footer.append(col);
+
+            cardDiv.append(footer);
+
+            //#endregion
+
+            // Activate bootstrap tooltips
+            $("[data-toggle='tooltip']").tooltip();
+
+            return cardDiv;
         }
-      });
-    });
 
-    function showReplaceFields(show) {
-      show ? $(".replace").show() : $(".replace").hide();
-    }
+        //#endregion
 
-    var hasName, hasAddress, hasPhoneNumber, hasEmail;
+        //#region Submit Request
 
-    $("#name").on('input', (e) => {
-      hasName = $("#name").val().length > 0;
-      $("#replaceName").prop("disabled", !hasName);
-      $("#replaceName").attr("placeholder", `Replace ${$("#name").val()} with this name`);
-      updateButtonStatus();
-    });
+        $('#submitRequest').click(() => {
 
-    $("#address").on('input', (e) => {
-      hasAddress = $("#address").val().length > 0;
-      $("#replaceAddress").prop("disabled", !hasAddress);
-      $("#replaceAddress").attr("placeholder", `Replace ${$("#address").val()} with this address`);
-      updateButtonStatus();
-    });
+            $("#submitRequest").buttonLoader("start");
 
-    $("#phoneNumber").on('input', (e) => {
-      hasPhoneNumber = $("#phoneNumber").val().length > 0;
-      $("#replacePhoneNumber").prop("disabled", !hasPhoneNumber);
-      $("#replacePhoneNumber").attr("placeholder", `Replace ${$("#phoneNumber").val()} with this phone number`);
-      updateButtonStatus();
-    });
+            showMessage("Submitting request...");
 
-    $("#email").on('input', (e) => {
-      hasEmail = $("#email").val().length > 0;
-      $("#replaceEmail").prop("disabled", !hasEmail);
-      $("#replaceEmail").attr("placeholder", `Replace ${$("#email").val()} with this email address`);
-      updateButtonStatus();
-    });
+            try {
+                var replacementTerms = [];
+                var selectedRequestType = $("#requestType").children("option:selected").val();
+                if (selectedRequestType == "GDPR_UPDATE") {
+                    var replaceName = $("#replaceName").val();
+                    var replaceAddress = $("#replaceAddress").val();
+                    var replacePhoneNumber = $("#replacePhoneNumber").val();
+                    var replaceEmail = $("#replaceEmail").val();
 
-    function updateButtonStatus() {
-      $("#search").prop("disabled", !hasName && !hasAddress && !hasPhoneNumber && !hasEmail);
-      $("#submitRequest").prop("disabled", !hasName && !hasAddress && !hasPhoneNumber && !hasEmail);
-    }
+                    if (replaceName) {
+                        replacementTerms.push({
+                            type: "NAME",
+                            existingValue: $("#name").val(),
+                            updatedValue: replaceName
+                        });
+                    }
 
+                    if (replaceAddress) {
+                        replacementTerms.push({
+                            type: "ADDRESS",
+                            existingValue: $("#address").val(),
+                            updatedValue: replaceAddress
+                        });
+                    }
+
+                    if (replacePhoneNumber) {
+                        replacementTerms.push({
+                            type: "PHONE",
+                            existingValue: $("#phoneNumber").val(),
+                            updatedValue: replacePhoneNumber
+                        });
+                    }
+
+                    if (replaceEmail) {
+                        replacementTerms.push({
+                            type: "EMAIL",
+                            existingValue: $("#email").val(),
+                            updatedValue: replaceEmail
+                        });
+                    }
+                }
+
+                submitRequest(
+                    $("#requestType").children("option:selected").val(),
+                    $("#name").val(),
+                    undefined, undefined, undefined, undefined, // No user id, external contact, dialer contact id or dialer contact list id
+                    [$("#address").val()],
+                    [$("#phoneNumber").val()],
+                    [$("#email").val()],
+                    replacementTerms
+                );
+
+            } catch (error) {
+                $("#submitRequest").buttonLoader("stop");
+            }
+
+        });
+
+        function submitRequest(requestType, name, userId, externalContactId, dialerContactIdId, dialerContactIdContactListId, addresses, phoneNumbers, emailAddresses, replacementTerms) {
+
+            //#region Populate Request Body
+
+            var body = {
+                requestType: requestType,
+                subject: {}
+            };
+
+            // Non-id fields should only be present if there is no id field set
+            if (userId) {
+                body.subject.userId = userId;
+            } else if (dialerContactIdId) {
+                body.subject.dialerContactId.id = dialerContactIdId;
+            } else if (dialerContactIdContactListId) {
+                body.subject.dialerContactId.contactListId = dialerContactIdContactListId;
+            } else if (externalContactId) {
+                body.subject.externalContactId = externalContactId;
+            } else {
+                if (name) {
+                    body.subject.name = name;
+                }
+
+                if (addresses && addresses.length > 0 && addresses[0] != "") {
+                    body.subject.addresses = addresses;
+                }
+
+                if (phoneNumbers && phoneNumbers.length > 0 && phoneNumbers[0] != "") {
+                    body.subject.phoneNumbers = phoneNumbers;
+                }
+
+                if (emailAddresses && emailAddresses.length > 0 && emailAddresses[0] != "") {
+                    body.subject.emailAddresses = emailAddresses;
+                }
+
+                if (replacementTerms) {
+                    body.replacementTerms = replacementTerms;
+                }
+            }
+
+            //#endregion
+
+            sendGDPRRequest(body).then((data) => {
+                $(location).attr('href', 'index.html');
+            }).catch((error) => {
+                //Seriously??
+                console.error(error.error.response.body.message);
+                showMessage(error.error.response.body.message, true);
+            });
+
+            $("#submitRequest").buttonLoader("stop");
+
+        }
 
     //#endregion
 
-    //#region Search
+    </script>
 
-    $("#search").click(() => {
-      let searchType, searchValue;
-
-      if ($("#name").val()) {
-        searchType = "NAME";
-        searchValue = $("#name").val();
-      } else if ($("#address").val()) {
-        searchType = "ADDRESS";
-        searchValue = $("#address").val();
-      } else if ($("#phoneNumber").val()) {
-        searchType = "PHONE";
-        searchValue = $("#phoneNumber").val();
-      } else if ($("#email").val()) {
-        searchType = "EMAIL";
-        searchValue = $("#email").val();
-      } else {
-        console.debug("No search parameters found");
-        return;
-      }
-
-      console.log(`Submitting new request. Search Type: ${searchType}, Value: ${searchValue}`);
-      searchForSubject(searchType, searchValue).then((data) => {
-        $("#cards").empty();
-        const items = data.entities;
-        showMessage(`${items.length} ${items.length == 0 || items.length > 1 ? " entries" : " entry"} found`);
-
-        for (let i = 0; i < items.length; i++) {
-          const item = items[i];
-          const userId = item.userId ? item.userId : "";
-          const name = item.name ? item.name : "";
-          const phoneNumber = item.phoneNumbers ? item.phoneNumbers[0] : "";
-          const address = item.addresses ? item.addresses[0] : "";
-          const email = item.emailAddresses ? item.emailAddresses[0] : "";
-          const externalContactId = item.externalContactId ? item.externalContactId : "";
-          const dialerContactIdId = item.dialerContactId ? item.dialerContactId.id : "";
-          const dialerContactIdContactListId = item.dialerContactId ? item.dialerContactId.contactListId : "";
-
-          $("#cards").append(createCard(userId, name, phoneNumber, address, email, externalContactId, dialerContactIdId, dialerContactIdContactListId));
-        }
-      }).catch((error) => {
-        console.log(error);
-      });
-    });
-
-    function createCard(userId, name, phoneNumber, address, email, externalContactId, dialerContactIdId, dialerContactIdContactListId) {
-      var cardDiv = document.createElement("div");
-      cardDiv.className = "card mt-2";
-
-      //#region Body
-
-      var body = document.createElement("div");
-      body.className = "card-body bg-light row no-gutters shadow-lg";
-
-      // User Id
-      if (userId) {
-        var userIdSection = document.createElement("h6");
-        userIdSection.className = "card-text small mr-1";
-        userIdSection.innerHTML = `<i class="fas fa-id-card"></i> ${userId}`;
-        userIdSection.setAttribute("data-toggle", "tooltip");
-        userIdSection.setAttribute("data-placement", "top");
-        userIdSection.setAttribute("title", "User Id");
-        body.append(userIdSection);
-      }
-
-      // Name
-      if (name) {
-        var nameSection = document.createElement("h6");
-        nameSection.className = "card-text small mr-1";
-        nameSection.innerHTML = `<i class="fas fa-user-circle"></i> ${name}`;
-        nameSection.setAttribute("data-toggle", "tooltip");
-        nameSection.setAttribute("data-placement", "top");
-        nameSection.setAttribute("title", "Name");
-        body.append(nameSection);
-      }
-
-      // Phone Number
-      if (phoneNumber) {
-        var phoneNumberSection = document.createElement("h6");
-        phoneNumberSection.className = "card-text small mr-1";
-        phoneNumberSection.innerHTML = `<i class="fas fa-phone"></i> ${phoneNumber}`;
-        phoneNumberSection.setAttribute("data-toggle", "tooltip");
-        phoneNumberSection.setAttribute("data-placement", "top");
-        phoneNumberSection.setAttribute("title", "Phone Number");
-        body.append(phoneNumberSection);
-      }
-
-      // Address
-      if (address) {
-        var addressSection = document.createElement("h6");
-        addressSection.className = "card-text small mr-1";
-        addressSection.innerHTML = `<i class="fas fa-address-card"></i> ${address}`;
-        addressSection.setAttribute("data-toggle", "tooltip");
-        addressSection.setAttribute("data-placement", "top");
-        addressSection.setAttribute("title", "Address");
-        body.append(addressSection);
-      }
-
-      // Email
-      if (email) {
-        var emailSection = document.createElement("h6");
-        emailSection.className = "card-text small mr-1";
-        emailSection.innerHTML = `<i class="fas fa-envelope"></i> ${email}`;
-        emailSection.setAttribute("data-toggle", "tooltip");
-        emailSection.setAttribute("data-placement", "top");
-        emailSection.setAttribute("title", "Email Address");
-        body.append(emailSection);
-      }
-
-      cardDiv.append(body);
-
-      //#endregion
-
-      //#region Footer
-
-      var footer = document.createElement("div");
-      footer.className = "row no-gutters bg-light";
-
-      var col = document.createElement("col");
-      col.className = "col";
-
-      // External and Dialer Contact Ids
-      var idSection = document.createElement("div");
-      idSection.className = "float-left text-secondary small ml-1";
-
-      // Dialer Contact Id
-      if (dialerContactIdId) {
-        var dialerContactIdSection = document.createElement("small");
-        dialerContactIdSection.setAttribute("id", "dialerContactId");
-        dialerContactIdSection.innerHTML = `<i class="fas fa-sign-out-alt ml-1"></i> ${dialerContactIdId}`;
-        dialerContactIdSection.setAttribute("data-toggle", "tooltip");
-        dialerContactIdSection.setAttribute("data-placement", "top");
-        dialerContactIdSection.setAttribute("title", "Dialer Contact Id");
-        idSection.append(dialerContactIdSection);
-      }
-
-      if (dialerContactIdContactListId) {
-        var dialerContactIdContactListIdSection = document.createElement("small");
-        dialerContactIdContactListIdSection.setAttribute("id", "dialerContactId");
-        dialerContactIdContactListIdSection.innerHTML = `<i class="fas fa-sign-out-alt ml-1"></i> ${dialerContactIdContactListId}`;
-        dialerContactIdContactListIdSection.setAttribute("data-toggle", "tooltip");
-        dialerContactIdContactListIdSection.setAttribute("data-placement", "top");
-        dialerContactIdContactListIdSection.setAttribute("title", "Dialer Contact List Id");
-        idSection.append(dialerContactIdContactListIdSection);
-      }
-
-      // External Contact Id
-      if (externalContactId) {
-        var externalContactIdSection = document.createElement("small");
-        externalContactIdSection.setAttribute("id", "externalContactId");
-        externalContactIdSection.innerHTML = `<i class="fas fa-list-ul ml-1"></i> ${externalContactId}`;
-        externalContactIdSection.setAttribute("data-toggle", "tooltip");
-        externalContactIdSection.setAttribute("data-placement", "top");
-        externalContactIdSection.setAttribute("title", "External Contact Id");
-        idSection.append(externalContactIdSection);
-      }
-
-      // Submit Button
-      var submitButtonDiv = document.createElement("div");
-      submitButtonDiv.className = "float-right text-secondary small";
-
-      var submitButton = document.createElement("button");
-      submitButton.className = "btn btn-info mb-1 mr-1";
-      submitButton.innerHTML = "Select & Submit";
-      submitButton.onclick = () => {
-        console.log("Button clicked for user id: " + userId);
-        console.log("email: " + email);
-        submitRequest(
-          $("#requestType").children("option:selected").val(),
-          name,
-          userId,
-          externalContactId,
-          dialerContactIdId,
-          dialerContactIdContactListId,
-          [address],
-          [phoneNumber],
-          [email]
-        );
-      };
-
-      submitButtonDiv.append(submitButton);
-
-      col.append(idSection);
-      col.append(submitButtonDiv);
-
-      footer.append(col);
-
-      cardDiv.append(footer);
-
-      //#endregion
-
-      // Activate bootstrap tooltips
-      $("[data-toggle='tooltip']").tooltip();
-
-      return cardDiv;
-    }
-
-    //#endregion
-
-    //#region Submit Request
-
-    $('#submitRequest').click(() => {
-
-      $("#submitRequest").buttonLoader("start");
-
-      showMessage("Submitting request...");
-
-      try {
-        var replacementTerms = [];
-        var selectedRequestType = $("#requestType").children("option:selected").val();
-        if (selectedRequestType == "GDPR_UPDATE") {
-          var replaceName = $("#replaceName").val();
-          var replaceAddress = $("#replaceAddress").val();
-          var replacePhoneNumber = $("#replacePhoneNumber").val();
-          var replaceEmail = $("#replaceEmail").val();
-
-          if (replaceName) {
-            replacementTerms.push({
-              type: "NAME",
-              existingValue: $("#name").val(),
-              updatedValue: replaceName
-            });
-          }
-
-          if (replaceAddress) {
-            replacementTerms.push({
-              type: "ADDRESS",
-              existingValue: $("#address").val(),
-              updatedValue: replaceAddress
-            });
-          }
-
-          if (replacePhoneNumber) {
-            replacementTerms.push({
-              type: "PHONE",
-              existingValue: $("#phoneNumber").val(),
-              updatedValue: replacePhoneNumber
-            });
-          }
-
-          if (replaceEmail) {
-            replacementTerms.push({
-              type: "EMAIL",
-              existingValue: $("#email").val(),
-              updatedValue: replaceEmail
-            });
-          }
-        }
-
-        submitRequest(
-          $("#requestType").children("option:selected").val(),
-          $("#name").val(),
-          undefined, undefined, undefined, undefined, // No user id, external contact, dialer contact id or dialer contact list id
-          [$("#address").val()],
-          [$("#phoneNumber").val()],
-          [$("#email").val()],
-          replacementTerms
-        );
-
-      } catch (error) {
-        $("#submitRequest").buttonLoader("stop");
-      }
-
-    });
-
-    function submitRequest(requestType, name, userId, externalContactId, dialerContactIdId, dialerContactIdContactListId, addresses, phoneNumbers, emailAddresses, replacementTerms) {
-
-      //#region Populate Request Body
-
-      var body = {
-        requestType: requestType,
-        subject: {}
-      };
-
-      if (userId) {
-        body.subject.userId = userId;
-      } else {
-        // Other fields should only be present if there is no user id
-        if (name) {
-          body.subject.name = name;
-        }
-
-        if (externalContactId) {
-          body.subject.externalContactId = externalContactId;
-        }
-
-        if (dialerContactIdId) {
-          body.subject.dialerContactId.id = dialerContactIdId;
-        }
-
-        if (dialerContactIdContactListId) {
-          body.subject.dialerContactId.contactListId = dialerContactIdContactListId;
-        }
-
-        if (addresses && addresses.length > 0 && addresses[0] != "") {
-          body.subject.addresses = addresses;
-        }
-
-        if (phoneNumbers && phoneNumbers.length > 0 && phoneNumbers[0] != "") {
-          body.subject.phoneNumbers = phoneNumbers;
-        }
-
-        if (emailAddresses && emailAddresses.length > 0 && emailAddresses[0] != "") {
-          body.subject.emailAddresses = emailAddresses;
-        }
-
-        if (replacementTerms) {
-          body.replacementTerms = replacementTerms;
-        }
-      }
-
-      //#endregion
-
-      sendGDPRRequest(body).then((data) => {
-        $(location).attr('href', 'index.html');
-      }).catch((error) => {
-        //Seriously??
-        console.error(error.error.response.body.message);
-        showMessage(error.error.response.body.message, true);
-      });
-
-      $("#submitRequest").buttonLoader("stop");
-
-    }
-
-    //#endregion
-
-  </script>
-
-  <!--#endregion -->
+    <!--#endregion -->
 
 </body>
 
