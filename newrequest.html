@@ -525,7 +525,7 @@
             }
 
             //#endregion
-
+            console.log("Sending GDPR request:", body);
             sendGDPRRequest(body).then((data) => {
                 $(location).attr('href', 'index.html');
             }).catch((error) => {
